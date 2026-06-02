@@ -8,77 +8,110 @@ const props = defineProps<{
 }>()
 
 const leaderboardStore = useLeaderboardStore()
-
 const movement = leaderboardStore.getRankMovement(props.entry)
-
-const movementConfig = {
-  up: {
-    icon: '↑',
-    color: 'text-green-600'
-  },
-  down: {
-    icon: '↓',
-    color: 'text-red-600'
-  },
-  same: {
-    icon: '→',
-    color: 'text-gray-400'
-  }
-}
-
-const config = movementConfig[movement]
 </script>
 
 <template>
-  <div
-    :class="[
-      'flex items-center justify-between py-4 px-6 border-b border-gray-200 hover:bg-gray-50 transition-colors',
-      isCurrentUser ? 'bg-green-50 font-semibold' : ''
-    ]"
-  >
-    <!-- Left: Position + Movement + Name -->
-    <div class="flex items-center gap-4 flex-1">
-      <!-- Position -->
-      <div class="text-xl font-semibold text-gray-700 w-8">
-        {{ entry.current_rank }}
-      </div>
+  <div :class="['ranking-row', isCurrentUser && 'ranking-row--me']">
+    <!-- Posição -->
+    <div class="rank-pos">{{ entry.current_rank }}</div>
 
-      <!-- Movement Arrow -->
-      <div :class="['text-xl font-bold', config.color]">
-        {{ config.icon }}
-      </div>
-
-      <!-- Name -->
-      <div class="text-lg text-gray-900">
-        {{ entry.username }}
-      </div>
+    <!-- Nome + movimento -->
+    <div class="rank-name-wrap">
+      <span :class="['rank-arrow', `arrow--${movement}`]">
+        {{ movement === 'up' ? '↑' : movement === 'down' ? '↓' : '—' }}
+      </span>
+      <span class="rank-name">{{ entry.username }}</span>
+      <span v-if="isCurrentUser" class="rank-you">você</span>
     </div>
 
-    <!-- Right: Stats + Score -->
-    <div class="flex items-center gap-6">
-      <!-- Correct Count (Placares Exatos) -->
-      <div class="flex items-center gap-1 text-gray-600">
-        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 9.586V7z" />
-        </svg>
-        <span class="text-sm">{{ entry.correct_count }}</span>
+    <!-- Stats compactos + pontos -->
+    <div class="rank-right">
+      <div class="rank-stats">
+        <span class="stat" title="Placares exatos">🎯 {{ entry.correct_count }}</span>
+        <span class="stat" title="Resultados corretos">✓ {{ entry.correct_results }}</span>
       </div>
-
-      <!-- Correct Results (Resultados Corretos) -->
-      <div class="flex items-center gap-1 text-gray-600">
-        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-        </svg>
-        <span class="text-sm">{{ entry.correct_results }}</span>
-      </div>
-
-      <!-- Score -->
-      <div class="text-right min-w-[60px]">
-        <div class="text-2xl font-bold text-green-600">
-          {{ entry.score }}
-        </div>
-        <div class="text-xs text-gray-500">pts</div>
-      </div>
+      <div class="rank-score">{{ entry.score }}</div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.ranking-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f3f4f6;
+  transition: background 0.1s;
+}
+.ranking-row:last-child { border-bottom: none; }
+.ranking-row:hover      { background: #f9fafb; }
+.ranking-row--me        { background: #f0fdf4; }
+.ranking-row--me:hover  { background: #dcfce7; }
+
+.rank-pos {
+  width: 24px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #6b7280;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.rank-name-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+.rank-arrow {
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.arrow--up   { color: #16a34a; }
+.arrow--down { color: #ef4444; }
+.arrow--same { color: #d1d5db; }
+
+.rank-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rank-you {
+  font-size: 10px;
+  font-weight: 600;
+  color: #16a34a;
+  background: #dcfce7;
+  padding: 1px 5px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.rank-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.rank-stats {
+  display: flex;
+  gap: 8px;
+}
+.stat {
+  font-size: 11px;
+  color: #9ca3af;
+}
+.rank-score {
+  font-size: 18px;
+  font-weight: 800;
+  color: #16a34a;
+  line-height: 1;
+}
+</style>

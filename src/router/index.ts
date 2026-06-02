@@ -10,6 +10,12 @@ const router = createRouter({
       component: LoginView
     },
     {
+      path: '/home',
+      name: 'home',
+      component: () => import('../views/HomeView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/palpites',
       name: 'palpites',
       component: () => import('../views/PalpitesView.vue'),
@@ -31,7 +37,7 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth && !participant) {
     next({ name: 'login' })
   } else if (to.name === 'login' && participant) {
-    next({ name: 'palpites' })
+    next({ name: 'home' })
   } else {
     next()
   }

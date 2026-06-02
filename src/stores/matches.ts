@@ -49,15 +49,16 @@ export const useMatchesStore = defineStore('matches', () => {
   }
 
   const predictedCount = computed(() => {
-    return matches.value.filter(m => 
-      m.predicted_home_score !== null && m.predicted_away_score !== null
+    const allMatches = Object.values(groups.value).flat()
+    return allMatches.filter(m =>
+      m.predicted_home_score != null && m.predicted_away_score != null
     ).length
   })
 
   const predictedCountByGroup = (groupName: string) => {
     const groupMatches = groups.value[groupName] || []
-    return groupMatches.filter(m => 
-      m.predicted_home_score !== null && m.predicted_away_score !== null
+    return groupMatches.filter(m =>
+      m.predicted_home_score != null && m.predicted_away_score != null
     ).length
   }
 

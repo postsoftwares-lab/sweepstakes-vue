@@ -26,62 +26,58 @@ const isCurrentUser = (userId: string) => {
 <template>
   <div class="min-h-screen bg-gray-50">
     <AppHeader />
-    
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <!-- Loading State -->
-      <div v-if="leaderboardStore.loading" class="flex items-center justify-center py-12">
-        <div class="flex flex-col items-center gap-4">
-          <svg class="animate-spin h-12 w-12 text-green-600" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
-          </svg>
-          <p class="text-gray-600">Carregando ranking...</p>
-        </div>
+
+    <main class="page-main">
+      <!-- Loading -->
+      <div v-if="leaderboardStore.loading" class="state-center">
+        <svg class="spin" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+        </svg>
+        <p class="state-text">Carregando ranking...</p>
       </div>
 
-      <!-- Error State -->
-      <div v-else-if="leaderboardStore.error" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-        <div class="flex items-center gap-3">
-          <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <div>
-            <h3 class="font-semibold text-red-900">Erro ao carregar ranking</h3>
-            <p class="text-sm text-red-700">{{ leaderboardStore.error }}</p>
-          </div>
-        </div>
+      <!-- Error -->
+      <div v-else-if="leaderboardStore.error" class="error-box">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span>{{ leaderboardStore.error }}</span>
       </div>
 
       <!-- Content -->
-      <div v-else>
-        <!-- Podium (Top 3) -->
-        <div v-if="leaderboardStore.top3.length > 0" class="mb-8">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            <!-- 2nd Place -->
-            <div v-if="leaderboardStore.top3[1]" class="order-1 md:order-1">
-              <PodiumCard :entry="leaderboardStore.top3[1]" :position="2" />
-            </div>
+      <div v-else class="content">
 
-            <!-- 1st Place -->
-            <div v-if="leaderboardStore.top3[0]" class="order-first md:order-2">
-              <PodiumCard :entry="leaderboardStore.top3[0]" :position="1" />
-            </div>
-
-            <!-- 3rd Place -->
-            <div v-if="leaderboardStore.top3[2]" class="order-2 md:order-3">
-              <PodiumCard :entry="leaderboardStore.top3[2]" :position="3" />
-            </div>
-          </div>
+        <!-- Pódio top 3 -->
+        <div v-if="leaderboardStore.top3.length > 0" class="podium-wrap">
+          <!-- Ordem: 2º | 1º | 3º para visual de pódio -->
+          <PodiumCard
+            v-if="leaderboardStore.top3[1]"
+            :entry="leaderboardStore.top3[1]"
+            :position="2"
+            :is-current-user="isCurrentUser(leaderboardStore.top3[1].user_id)"
+          />
+          <PodiumCard
+            v-if="leaderboardStore.top3[0]"
+            :entry="leaderboardStore.top3[0]"
+            :position="1"
+            :is-current-user="isCurrentUser(leaderboardStore.top3[0].user_id)"
+          />
+          <PodiumCard
+            v-if="leaderboardStore.top3[2]"
+            :entry="leaderboardStore.top3[2]"
+            :position="3"
+            :is-current-user="isCurrentUser(leaderboardStore.top3[2].user_id)"
+          />
         </div>
 
-        <!-- Full Ranking Table -->
-        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-          <!-- Table Header -->
-          <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
-            <h2 class="text-xl font-bold text-gray-900">Classificação Geral</h2>
+        <!-- Tabela geral -->
+        <div class="ranking-card">
+          <div class="ranking-header">
+            <span class="ranking-title">Classificação Geral</span>
+            <span class="ranking-count">{{ leaderboardStore.rankings.length }} participantes</span>
           </div>
 
-          <!-- Table Content -->
           <div v-if="leaderboardStore.rankings.length > 0">
             <RankingRow
               v-for="entry in leaderboardStore.rankings"
@@ -91,33 +87,120 @@ const isCurrentUser = (userId: string) => {
             />
           </div>
 
-          <!-- Empty State -->
-          <div v-else class="text-center py-12">
-            <svg class="mx-auto h-16 w-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <h3 class="mt-4 text-lg font-medium text-gray-900">Nenhum participante ainda</h3>
-            <p class="mt-2 text-gray-600">Seja o primeiro a fazer seus palpites!</p>
+          <div v-else class="empty-state">
+            <p class="empty-title">Nenhum participante ainda</p>
+            <p class="empty-sub">Seja o primeiro a fazer seus palpites!</p>
           </div>
         </div>
 
-        <!-- User Position Info (if not in top 10) -->
-        <div
-          v-if="currentUserRank && currentUserRank.current_rank > 10"
-          class="mt-6 bg-green-50 border-2 border-green-200 rounded-xl p-4"
-        >
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-gray-600">Sua posição atual</p>
-              <p class="text-2xl font-bold text-green-600">{{ currentUserRank.current_rank }}º lugar</p>
-            </div>
-            <div class="text-right">
-              <p class="text-sm text-gray-600">Pontos</p>
-              <p class="text-2xl font-bold text-gray-900">{{ currentUserRank.score }}</p>
-            </div>
+        <!-- Minha posição (se fora do top 10) -->
+        <div v-if="currentUserRank && currentUserRank.current_rank > 10" class="my-pos">
+          <div>
+            <p class="my-pos-label">Sua posição</p>
+            <p class="my-pos-rank">{{ currentUserRank.current_rank }}°</p>
+          </div>
+          <div class="text-right">
+            <p class="my-pos-label">Pontos</p>
+            <p class="my-pos-score">{{ currentUserRank.score }}</p>
           </div>
         </div>
+
       </div>
     </main>
   </div>
 </template>
+
+<style scoped>
+.page-main {
+  width: 100%;
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 16px 12px 32px;
+}
+
+/* Loading / Error */
+.state-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 48px 0;
+}
+.spin {
+  width: 36px;
+  height: 36px;
+  color: #16a34a;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.state-text { font-size: 13px; color: #6b7280; }
+
+.error-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: #b91c1c;
+}
+
+/* Content */
+.content { display: flex; flex-direction: column; gap: 12px; }
+
+/* Pódio horizontal */
+.podium-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: end;
+  gap: 8px;
+}
+
+/* Tabela */
+.ranking-card {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+.ranking-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #f3f4f6;
+}
+.ranking-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+}
+.ranking-count {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* Empty */
+.empty-state {
+  padding: 40px 20px;
+  text-align: center;
+}
+.empty-title { font-size: 14px; font-weight: 600; color: #374151; }
+.empty-sub   { font-size: 13px; color: #9ca3af; margin-top: 4px; }
+
+/* Minha posição */
+.my-pos {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f0fdf4;
+  border: 1.5px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.my-pos-label { font-size: 11px; color: #6b7280; }
+.my-pos-rank  { font-size: 22px; font-weight: 800; color: #16a34a; }
+.my-pos-score { font-size: 22px; font-weight: 800; color: #111827; }
+</style>

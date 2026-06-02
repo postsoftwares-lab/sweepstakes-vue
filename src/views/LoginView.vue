@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { authApi } from '@/services/api'
+import { useAuthStore } from '@/stores/auth'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-import { authApi } from '@/services/api'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -30,7 +30,7 @@ const handleSubmit = async () => {
     
     if (response.success && response.data) {
       authStore.setParticipant(response.data)
-      router.push({ name: 'palpites' })
+      router.push({ name: 'home' })
     } else {
       error.value = 'Erro ao entrar no bolão. Tente novamente.'
     }
