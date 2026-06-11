@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import AppHeader from '@/components/AppHeader.vue'
+import MatchCard from '@/components/MatchCard.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useMatchesStore } from '@/stores/matches'
 import { usePredictionsStore } from '@/stores/predictions'
-import AppHeader from '@/components/AppHeader.vue'
-import MatchCard from '@/components/MatchCard.vue'
+import { onMounted, ref } from 'vue'
 
 const authStore = useAuthStore()
 const matchesStore = useMatchesStore()

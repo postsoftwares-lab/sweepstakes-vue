@@ -26,6 +26,12 @@ const router = createRouter({
       name: 'ranking',
       component: () => import('../views/RankingView.vue'),
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/meus-palpites',
+      name: 'meus-palpites',
+      component: () => import('../views/MeusPalpitesView.vue'),
+      meta: { requiresAuth: true }
     }
   ]
 })
@@ -33,7 +39,7 @@ const router = createRouter({
 // Guard de navegação para verificar autenticação
 router.beforeEach((to, from, next) => {
   const participant = localStorage.getItem('participant')
-  
+
   if (to.meta.requiresAuth && !participant) {
     next({ name: 'login' })
   } else if (to.name === 'login' && participant) {
