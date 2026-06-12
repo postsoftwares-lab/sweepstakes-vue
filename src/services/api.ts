@@ -10,10 +10,14 @@ const api = axios.create({
 
 api.interceptors.request.use((config) => {
   const participant = localStorage.getItem('participant')
-  if (participant) {
+  const urlsRequiringParticipantId = ['/get-matches', '/predictions', '/create-prediction', '/update-prediction']
+
+  if (participant && config.url) {
     try {
       const data = JSON.parse(participant)
-      if (data.id && config.url && !config.params?.participant_id) {
+      const needsParticipantId = urlsRequiringParticipantId.some(url => config.url?.includes(url))
+
+      if (data.id && needsParticipantId && !config.params?.participant_id) {
         if (!config.params) {
           config.params = {}
         }
