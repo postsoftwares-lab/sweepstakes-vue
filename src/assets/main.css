@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  color-scheme: light;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -9,9 +13,188 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: #f9fafb;
+  color: #111827;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 #app {
   width: 100%;
   min-height: 100vh;
+}
+
+body.dark-theme {
+  color-scheme: dark;
+  background: #050505;
+  color: #f3f4f6;
+}
+
+body.dark-theme #app,
+body.dark-theme .min-h-screen,
+body.dark-theme .bg-gray-50 {
+  background-color: #050505 !important;
+}
+
+body.dark-theme .bg-white,
+body.dark-theme .app-header,
+body.dark-theme .drawer,
+body.dark-theme .profile-menu,
+body.dark-theme .match-card,
+body.dark-theme .section-card,
+body.dark-theme .ranking-card,
+body.dark-theme .profile-card,
+body.dark-theme .round-block,
+body.dark-theme .podium-card,
+body.dark-theme .modal-card {
+  background: #111111 !important;
+  border-color: #262626 !important;
+  color: #f3f4f6 !important;
+}
+
+body.dark-theme :is(
+    .bg-white,
+    .app-header,
+    .drawer,
+    .profile-menu,
+    .match-card,
+    .section-card,
+    .ranking-card,
+    .profile-card,
+    .round-block,
+    .podium-card,
+    .modal-card
+  ) :is(h1, h2, h3, h4, h5, h6, p, span, label, a, li, small, strong, em, dt, dd, summary, option, legend) {
+  color: #f5f5f5 !important;
+}
+
+body.dark-theme .text-gray-900,
+body.dark-theme .text-gray-700,
+body.dark-theme .text-gray-600,
+body.dark-theme .text-gray-500,
+body.dark-theme .text-gray-400,
+body.dark-theme .logo-text,
+body.dark-theme .page-title,
+body.dark-theme .profile-title,
+body.dark-theme .history-title,
+body.dark-theme .round-name,
+body.dark-theme .profile-menu-title,
+body.dark-theme .profile-name,
+body.dark-theme .profile-chevron,
+body.dark-theme .drawer-email,
+body.dark-theme .profile-value,
+body.dark-theme .team,
+body.dark-theme .score,
+body.dark-theme .rank-name,
+body.dark-theme .username {
+  color: #f3f4f6 !important;
+}
+
+body.dark-theme .text-gray-300,
+body.dark-theme .text-gray-200,
+body.dark-theme .text-gray-100,
+body.dark-theme .text-gray-800,
+body.dark-theme .pred-stage,
+body.dark-theme .page-sub,
+body.dark-theme .profile-subtitle,
+body.dark-theme .history-subtitle,
+body.dark-theme .profile-menu-subtitle,
+body.dark-theme .drawer-user-label,
+body.dark-theme .profile-menu-link,
+body.dark-theme .profile-menu-link svg,
+body.dark-theme .drawer-link,
+body.dark-theme .profile-label,
+body.dark-theme .pred-label,
+body.dark-theme .pred-pending,
+body.dark-theme .empty,
+body.dark-theme .round-count,
+body.dark-theme .match-city,
+body.dark-theme .meta-dot,
+body.dark-theme .match-date,
+body.dark-theme .team-code,
+body.dark-theme .text-muted,
+body.dark-theme .stat,
+body.dark-theme .rank-count,
+body.dark-theme .ranking-count,
+body.dark-theme .rank-pos,
+body.dark-theme .my-pos-label,
+body.dark-theme .total-label {
+  color: #a3a3a3 !important;
+}
+
+body.dark-theme .border-gray-200,
+body.dark-theme .border-gray-100,
+body.dark-theme .border-gray-300,
+body.dark-theme .drawer-divider,
+body.dark-theme .section-head,
+body.dark-theme .pred-list,
+body.dark-theme .match-footer,
+body.dark-theme .match-footer-readonly,
+body.dark-theme .ranking-header,
+body.dark-theme .profile-menu-head,
+body.dark-theme .round-toggle,
+body.dark-theme .ranking-row,
+body.dark-theme .rank-row {
+  border-color: #262626 !important;
+}
+
+body.dark-theme .bg-green-100,
+body.dark-theme .logo-icon,
+body.dark-theme .drawer-avatar,
+body.dark-theme .profile-avatar,
+body.dark-theme .avatar-circle {
+  background: #16351f !important;
+  color: #86efac !important;
+}
+
+body.dark-theme .bg-red-50,
+body.dark-theme .bg-yellow-50,
+body.dark-theme .bg-orange-50,
+body.dark-theme .profile-item,
+body.dark-theme .modal-example,
+body.dark-theme .score-display,
+body.dark-theme .team-flag,
+body.dark-theme .theme-toggle,
+body.dark-theme .profile-trigger,
+body.dark-theme .user-email {
+  background: #171717 !important;
+  border-color: #262626 !important;
+}
+
+body.dark-theme .hover\:bg-gray-50:hover,
+body.dark-theme .nav-link:hover,
+body.dark-theme .profile-trigger:hover,
+body.dark-theme .profile-trigger--active,
+body.dark-theme .hamburger:hover,
+body.dark-theme .drawer-link:hover,
+body.dark-theme .profile-menu-link:hover,
+body.dark-theme .round-toggle:hover,
+body.dark-theme .ranking-row:hover,
+body.dark-theme .rank-row:hover,
+body.dark-theme .btn-link:hover,
+body.dark-theme .drawer-logout:hover,
+body.dark-theme .theme-toggle-button:hover {
+  background: #1f1f1f !important;
+  color: #f5f5f5 !important;
+}
+
+body.dark-theme .active\:bg-gray-100:active {
+  background: #262626 !important;
+}
+
+body.dark-theme input,
+body.dark-theme select,
+body.dark-theme textarea {
+  background: #111111 !important;
+  color: #f3f4f6 !important;
+  border-color: #404040 !important;
+}
+
+body.dark-theme input::placeholder,
+body.dark-theme textarea::placeholder {
+  color: #737373 !important;
+}
+
+body.dark-theme .overlay,
+body.dark-theme .modal-overlay {
+  background: rgba(0, 0, 0, 0.7) !important;
 }

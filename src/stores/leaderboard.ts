@@ -6,6 +6,8 @@ export interface LeaderboardEntry {
   id: string
   user_id: string
   username: string
+  name?: string
+  nickname?: string | null
   score: number
   correct_count: number
   correct_results: number
@@ -75,6 +77,8 @@ export const useLeaderboardStore = defineStore('leaderboard', () => {
         id: '1',
         user_id: 'user-1',
         username: 'Maria',
+        name: 'Maria Santos',
+        nickname: 'maria',
         score: 45,
         correct_count: 3,
         correct_results: 2,
@@ -87,6 +91,8 @@ export const useLeaderboardStore = defineStore('leaderboard', () => {
         id: '2',
         user_id: 'user-2',
         username: 'João Silva',
+        name: 'João Silva',
+        nickname: 'joao',
         score: 40,
         correct_count: 2,
         correct_results: 4,
@@ -99,6 +105,8 @@ export const useLeaderboardStore = defineStore('leaderboard', () => {
         id: '3',
         user_id: 'user-3',
         username: 'Pedro Santos',
+        name: 'Pedro Santos',
+        nickname: 'pedro',
         score: 38,
         correct_count: 2,
         correct_results: 3,
@@ -111,6 +119,8 @@ export const useLeaderboardStore = defineStore('leaderboard', () => {
         id: '4',
         user_id: 'user-4',
         username: 'Ana Oliveira',
+        name: 'Ana Oliveira',
+        nickname: 'ana',
         score: 35,
         correct_count: 1,
         correct_results: 4,
@@ -123,6 +133,8 @@ export const useLeaderboardStore = defineStore('leaderboard', () => {
         id: '5',
         user_id: 'user-5',
         username: 'Carlos Mendes',
+        name: 'Carlos Mendes',
+        nickname: 'carlos',
         score: 30,
         correct_count: 1,
         correct_results: 3,
@@ -135,6 +147,8 @@ export const useLeaderboardStore = defineStore('leaderboard', () => {
         id: '6',
         user_id: 'user-6',
         username: 'Fernanda Lima',
+        name: 'Fernanda Lima',
+        nickname: 'fernanda',
         score: 28,
         correct_count: 1,
         correct_results: 2,
@@ -147,6 +161,8 @@ export const useLeaderboardStore = defineStore('leaderboard', () => {
         id: '7',
         user_id: 'user-7',
         username: 'Lucas Ferreira',
+        name: 'Lucas Ferreira',
+        nickname: 'lucas',
         score: 25,
         correct_count: 0,
         correct_results: 3,
@@ -159,6 +175,8 @@ export const useLeaderboardStore = defineStore('leaderboard', () => {
         id: '8',
         user_id: 'user-8',
         username: 'Beatriz Souza',
+        name: 'Beatriz Souza',
+        nickname: 'bia',
         score: 22,
         correct_count: 0,
         correct_results: 2,
@@ -171,6 +189,8 @@ export const useLeaderboardStore = defineStore('leaderboard', () => {
         id: '9',
         user_id: 'user-9',
         username: 'Rafael Costa',
+        name: 'Rafael Costa',
+        nickname: 'rafa',
         score: 20,
         correct_count: 0,
         correct_results: 2,
@@ -183,6 +203,8 @@ export const useLeaderboardStore = defineStore('leaderboard', () => {
         id: '10',
         user_id: 'user-10',
         username: 'Julia Almeida',
+        name: 'Julia Almeida',
+        nickname: 'julia',
         score: 18,
         correct_count: 0,
         correct_results: 1,

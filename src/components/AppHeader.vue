@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/auth'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const menuOpen = ref(false)
+const profileMenuOpen = ref(false)
+const themeMode = ref<'light' | 'dark'>('light')
 
 const isActiveRoute = (routeName: string) => {
   return router.currentRoute.value.name === routeName
@@ -14,19 +16,59 @@ const isActiveRoute = (routeName: string) => {
 const handleLogout = () => {
   authStore.clearAuth()
   menuOpen.value = false
+  profileMenuOpen.value = false
   router.push({ name: 'login' })
 }
 
 const closeMenu = () => {
   menuOpen.value = false
+  profileMenuOpen.value = false
 }
+
+const displayName = () => {
+  return authStore.participant?.nickname || authStore.participant?.name || authStore.participant?.email
+}
+
+const applyTheme = (mode: 'light' | 'dark') => {
+  themeMode.value = mode
+  document.body.classList.toggle('dark-theme', mode === 'dark')
+  localStorage.setItem('theme-mode', mode)
+}
+
+const setLightTheme = () => {
+  applyTheme('light')
+}
+
+const setDarkTheme = () => {
+  applyTheme('dark')
+}
+
+const goHome = () => {
+  profileMenuOpen.value = false
+  menuOpen.value = false
+  router.push({ name: 'home' })
+}
+
+const openUserArea = () => {
+  profileMenuOpen.value = false
+  menuOpen.value = false
+  router.push({ name: 'meus-palpites' })
+}
+
+const toggleProfileMenu = () => {
+  profileMenuOpen.value = !profileMenuOpen.value
+}
+
+onMounted(() => {
+  const storedTheme = localStorage.getItem('theme-mode')
+  applyTheme(storedTheme === 'dark' ? 'dark' : 'light')
+})
 </script>
 
 <template>
   <header class="app-header">
     <div class="header-inner">
-      <!-- Logo -->
-      <div class="logo">
+      <button class="logo" @click="goHome" aria-label="Ir para a página principal">
         <div class="logo-icon">
           <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
@@ -34,9 +76,8 @@ const closeMenu = () => {
           </svg>
         </div>
         <span class="logo-text">Bolão Copa 2026</span>
-      </div>
+      </button>
 
-      <!-- Desktop Nav -->
       <nav class="desktop-nav">
         <router-link to="/palpites" :class="['nav-link', isActiveRoute('palpites') && 'nav-link--active']">
           Palpites
@@ -46,22 +87,66 @@ const closeMenu = () => {
         </router-link>
       </nav>
 
-      <!-- Desktop user info -->
-      <div class="desktop-user">
-        <div class="user-email">
-          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+      <div class="theme-toggle" aria-label="Alternar tema">
+        <button
+          class="theme-toggle-button"
+          :class="{ 'theme-toggle-button--active': themeMode === 'light' }"
+          @click="setLightTheme"
+          title="Modo claro"
+          aria-label="Modo claro"
+        >
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364 6.364-1.414-1.414M7.05 7.05 5.636 5.636m12.728 0L16.95 7.05M7.05 16.95l-1.414 1.414M12 8a4 4 0 100 8 4 4 0 000-8z" />
           </svg>
-          <span>{{ authStore.participant?.email }}</span>
-        </div>
-        <button @click="handleLogout" class="logout-btn" title="Sair">
-          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        </button>
+        <button
+          class="theme-toggle-button"
+          :class="{ 'theme-toggle-button--active': themeMode === 'dark' }"
+          @click="setDarkTheme"
+          title="Modo escuro"
+          aria-label="Modo escuro"
+        >
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646a9 9 0 1011.708 11.708z" />
           </svg>
         </button>
       </div>
 
-      <!-- Hamburger button (mobile only) -->
+      <div class="desktop-user">
+        <button class="profile-trigger" :class="{ 'profile-trigger--active': profileMenuOpen }" @click="toggleProfileMenu" title="Abrir área do usuário">
+          <span class="avatar-circle">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </span>
+          <span class="profile-name">{{ displayName() }}</span>
+          <svg class="profile-chevron" width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        <div v-if="profileMenuOpen" class="profile-menu">
+          <div class="profile-menu-head">
+            <span class="profile-menu-title">{{ displayName() }}</span>
+            <span class="profile-menu-subtitle">{{ authStore.participant?.email }}</span>
+          </div>
+
+          <button class="profile-menu-link" @click="openUserArea">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14l9 5H3l9-5z" />
+            </svg>
+            Meus dados e palpites
+          </button>
+
+          <button @click="handleLogout" class="profile-menu-link profile-menu-link--danger">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Sair
+          </button>
+        </div>
+      </div>
+
       <button
         class="hamburger"
         @click="menuOpen = !menuOpen"
@@ -75,29 +160,33 @@ const closeMenu = () => {
     </div>
   </header>
 
-  <!-- Overlay -->
+  <button v-if="profileMenuOpen" class="profile-backdrop" @click="profileMenuOpen = false" aria-label="Fechar menu do usuário"></button>
+
   <transition name="fade">
     <div v-if="menuOpen" class="overlay" @click="closeMenu" />
   </transition>
 
-  <!-- Drawer mobile -->
   <transition name="slide-up">
     <div v-if="menuOpen" class="drawer">
       <div class="drawer-handle" />
 
-      <!-- User info -->
-      <div class="drawer-user">
+      <button class="drawer-user drawer-user--button" @click="openUserArea">
         <div class="drawer-avatar">
           <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
         </div>
-        <span class="drawer-email">{{ authStore.participant?.email }}</span>
-      </div>
+        <div class="drawer-user-copy">
+          <span class="drawer-email">{{ displayName() }}</span>
+          <span class="drawer-user-label">Meus dados e palpites</span>
+        </div>
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
 
       <div class="drawer-divider" />
 
-      <!-- Nav links -->
       <nav class="drawer-nav">
         <router-link
           to="/home"
@@ -129,16 +218,6 @@ const closeMenu = () => {
           </svg>
           Ranking
         </router-link>
-        <router-link
-          to="/meus-palpites"
-          :class="['drawer-link', isActiveRoute('meus-palpites') && 'drawer-link--active']"
-          @click="closeMenu"
-        >
-          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          Meus Palpites
-        </router-link>
       </nav>
 
       <div class="drawer-divider" />
@@ -154,7 +233,6 @@ const closeMenu = () => {
 </template>
 
 <style scoped>
-/* ── Header ────────────────────────────────────────── */
 .app-header {
   position: sticky;
   top: 0;
@@ -171,13 +249,15 @@ const closeMenu = () => {
   max-width: 42rem;
   margin: 0 auto;
 }
-
-/* ── Logo ──────────────────────────────────────────── */
 .logo {
   display: flex;
   align-items: center;
   gap: 8px;
   text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }
 .logo-icon {
   width: 32px;
@@ -196,13 +276,40 @@ const closeMenu = () => {
   color: #111827;
   white-space: nowrap;
 }
-
-/* ── Desktop nav (hidden on mobile) ───────────────── */
 .desktop-nav {
   display: none;
 }
 .desktop-user {
   display: none;
+}
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+.theme-toggle-button {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.theme-toggle-button:hover {
+  background: #f3f4f6;
+}
+.theme-toggle-button--active {
+  background: #16a34a;
+  color: #fff;
 }
 @media (min-width: 640px) {
   .desktop-nav {
@@ -213,13 +320,12 @@ const closeMenu = () => {
   .desktop-user {
     display: flex;
     align-items: center;
-    gap: 8px;
+    position: relative;
   }
   .hamburger {
     display: none !important;
   }
 }
-
 .nav-link {
   padding: 6px 14px;
   border-radius: 8px;
@@ -237,36 +343,110 @@ const closeMenu = () => {
   background: #16a34a;
   color: #fff !important;
 }
-
-.user-email {
+.profile-trigger {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 5px 10px;
+  gap: 8px;
+  padding: 5px 8px 5px 5px;
   background: #f9fafb;
-  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
   font-size: 13px;
   color: #4b5563;
-  max-width: 180px;
+  max-width: 220px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-.logout-btn {
-  padding: 6px;
-  color: #9ca3af;
-  background: none;
-  border: none;
   cursor: pointer;
-  border-radius: 6px;
-  transition: color 0.15s, background 0.15s;
+  transition: background 0.15s, border-color 0.15s;
+  position: relative;
+  z-index: 46;
 }
-.logout-btn:hover {
-  color: #ef4444;
+.profile-trigger:hover,
+.profile-trigger--active {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+}
+.avatar-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  color: #166534;
+  flex-shrink: 0;
+}
+.profile-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.profile-chevron {
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+.profile-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 240px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.14);
+  padding: 10px;
+  z-index: 46;
+}
+.profile-menu-head {
+  padding: 8px 10px 10px;
+  border-bottom: 1px solid #f3f4f6;
+  margin-bottom: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.profile-menu-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
+}
+.profile-menu-subtitle {
+  font-size: 11px;
+  color: #9ca3af;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.profile-menu-link {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border: none;
+  background: none;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 600;
+}
+.profile-menu-link:hover {
+  background: #f9fafb;
+}
+.profile-menu-link--danger {
+  color: #b91c1c;
+}
+.profile-menu-link--danger:hover {
   background: #fef2f2;
 }
-
-/* ── Hamburger ─────────────────────────────────────── */
+.profile-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  border: none;
+  background: transparent;
+}
 .hamburger {
   display: flex;
   flex-direction: column;
@@ -293,19 +473,15 @@ const closeMenu = () => {
   transition: transform 0.25s, opacity 0.25s;
   transform-origin: center;
 }
-.bar--open-top  { transform: translateY(7px) rotate(45deg); }
-.bar--open-mid  { opacity: 0; transform: scaleX(0); }
-.bar--open-bot  { transform: translateY(-7px) rotate(-45deg); }
-
-/* ── Overlay ───────────────────────────────────────── */
+.bar--open-top { transform: translateY(7px) rotate(45deg); }
+.bar--open-mid { opacity: 0; transform: scaleX(0); }
+.bar--open-bot { transform: translateY(-7px) rotate(-45deg); }
 .overlay {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.35);
   z-index: 48;
 }
-
-/* ── Drawer (bottom sheet mobile) ─────────────────── */
 .drawer {
   position: fixed;
   bottom: 0;
@@ -330,6 +506,14 @@ const closeMenu = () => {
   gap: 10px;
   padding: 4px 20px 12px;
 }
+.drawer-user--button {
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: left;
+  justify-content: space-between;
+  cursor: pointer;
+}
 .drawer-avatar {
   width: 36px;
   height: 36px;
@@ -341,12 +525,24 @@ const closeMenu = () => {
   color: #16a34a;
   flex-shrink: 0;
 }
+.drawer-user-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
 .drawer-email {
   font-size: 13px;
-  color: #4b5563;
+  color: #111827;
+  font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.drawer-user-label {
+  font-size: 12px;
+  color: #6b7280;
 }
 .drawer-divider {
   height: 1px;
@@ -396,11 +592,8 @@ const closeMenu = () => {
 .drawer-logout:hover {
   background: #fef2f2;
 }
-
-/* ── Transitions ───────────────────────────────────── */
 .fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
-.fade-enter-from, .fade-leave-to       { opacity: 0; }
-
+.fade-enter-from, .fade-leave-to { opacity: 0; }
 .slide-up-enter-active { transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1); }
 .slide-up-leave-active { transition: transform 0.22s ease-in; }
 .slide-up-enter-from, .slide-up-leave-to { transform: translateY(100%); }

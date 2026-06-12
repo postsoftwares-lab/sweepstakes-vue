@@ -9,6 +9,7 @@ const props = defineProps<{
 
 const leaderboardStore = useLeaderboardStore()
 const movement = leaderboardStore.getRankMovement(props.entry)
+const displayName = props.entry.name || props.entry.username
 </script>
 
 <template>
@@ -21,7 +22,7 @@ const movement = leaderboardStore.getRankMovement(props.entry)
       <span :class="['rank-arrow', `arrow--${movement}`]">
         {{ movement === 'up' ? '↑' : movement === 'down' ? '↓' : '—' }}
       </span>
-      <span class="rank-name">{{ entry.username }}</span>
+      <span class="rank-name">{{ displayName }}</span>
       <span v-if="isCurrentUser" class="rank-you">você</span>
     </div>
 

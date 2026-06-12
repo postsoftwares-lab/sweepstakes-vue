@@ -50,12 +50,10 @@ onMounted(async () => {
     <AppHeader />
 
     <main class="w-full max-w-2xl mx-auto px-4 py-5">
-
-      <!-- Page header -->
       <div class="page-header">
         <div>
-          <h1 class="page-title">Meus Palpites</h1>
-          <p class="page-sub">Histórico de previsões</p>
+          <h1 class="page-title">Minha Área</h1>
+          <p class="page-sub">Seus dados cadastrais e histórico de previsões</p>
         </div>
         <div class="total-pts">
           <span class="total-num">{{ predictionsHistoryStore.totalPoints }}</span>
@@ -63,7 +61,46 @@ onMounted(async () => {
         </div>
       </div>
 
-      <!-- Loading -->
+      <section class="profile-card">
+        <div class="profile-card-head">
+          <div class="profile-avatar">
+            <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
+          <div>
+            <h2 class="profile-title">Dados cadastrais</h2>
+            <p class="profile-subtitle">Informações usadas no bolão e no ranking.</p>
+          </div>
+        </div>
+
+        <div class="profile-grid">
+          <div class="profile-item">
+            <span class="profile-label">Nome</span>
+            <span class="profile-value">{{ authStore.participant?.name || 'Não informado' }}</span>
+          </div>
+          <div class="profile-item">
+            <span class="profile-label">Nickname</span>
+            <span class="profile-value">{{ authStore.participant?.nickname || 'Não informado' }}</span>
+          </div>
+          <div class="profile-item">
+            <span class="profile-label">Time do coração</span>
+            <span class="profile-value">{{ authStore.participant?.favorite_team || 'Não informado' }}</span>
+          </div>
+          <div class="profile-item">
+            <span class="profile-label">Email</span>
+            <span class="profile-value">{{ authStore.participant?.email || 'Não informado' }}</span>
+          </div>
+        </div>
+      </section>
+
+      <div class="history-header">
+        <div>
+          <h2 class="history-title">Meus Palpites</h2>
+          <p class="history-subtitle">Resumo por rodada e pontuação acumulada.</p>
+        </div>
+      </div>
+
       <div v-if="predictionsHistoryStore.loading" class="loading">
         <svg class="spinner" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
@@ -72,19 +109,16 @@ onMounted(async () => {
         <span>Carregando palpites...</span>
       </div>
 
-      <!-- Error -->
       <div v-else-if="predictionsHistoryStore.error" class="error-box">
         {{ predictionsHistoryStore.error }}
       </div>
 
-      <!-- Rounds -->
       <div v-else class="rounds">
         <div
           v-for="roundNumber in predictionsHistoryStore.roundNumbers"
           :key="roundNumber"
           class="round-block"
         >
-          <!-- Round toggle -->
           <button class="round-toggle" @click="toggleRound(roundNumber)">
             <div class="round-left">
               <span class="round-name">Rodada {{ roundNumber }}</span>
@@ -101,7 +135,6 @@ onMounted(async () => {
             </div>
           </button>
 
-          <!-- Prediction rows -->
           <div v-show="isRoundExpanded(roundNumber)" class="pred-list">
             <div
               v-for="prediction in predictionsHistoryStore.getPredictionsByRound(roundNumber)"
@@ -123,20 +156,17 @@ onMounted(async () => {
         </div>
       </div>
 
-      <!-- Empty -->
       <div
         v-if="!predictionsHistoryStore.loading && predictionsHistoryStore.roundNumbers.length === 0"
         class="empty"
       >
         <p>Nenhum palpite encontrado</p>
       </div>
-
     </main>
   </div>
 </template>
 
 <style scoped>
-/* ── Page header ─────────────────────────────────── */
 .page-header {
   display: flex;
   align-items: flex-start;
@@ -170,8 +200,82 @@ onMounted(async () => {
   color: #9ca3af;
   margin-top: 3px;
 }
-
-/* ── Loading / Error ─────────────────────────────── */
+.profile-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.profile-card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.profile-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+  color: #166534;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.profile-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #111827;
+}
+.profile-subtitle {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 3px;
+}
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.profile-item {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.profile-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #9ca3af;
+}
+.profile-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  word-break: break-word;
+}
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.history-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #111827;
+}
+.history-subtitle {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 2px;
+}
 .loading {
   display: flex;
   flex-direction: column;
@@ -188,7 +292,6 @@ onMounted(async () => {
   animation: spin 0.8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-
 .error-box {
   background: #fef2f2;
   border: 1px solid #fecaca;
@@ -197,21 +300,17 @@ onMounted(async () => {
   font-size: 13px;
   color: #b91c1c;
 }
-
-/* ── Rounds ──────────────────────────────────────── */
 .rounds {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
-
 .round-block {
   background: #fff;
   border-radius: 12px;
   border: 1px solid #e5e7eb;
   overflow: hidden;
 }
-
 .round-toggle {
   width: 100%;
   display: flex;
@@ -224,7 +323,6 @@ onMounted(async () => {
   transition: background 0.12s;
 }
 .round-toggle:hover { background: #f9fafb; }
-
 .round-left {
   display: flex;
   align-items: center;
@@ -242,7 +340,6 @@ onMounted(async () => {
   padding: 1px 7px;
   border-radius: 99px;
 }
-
 .round-right {
   display: flex;
   align-items: center;
@@ -261,8 +358,6 @@ onMounted(async () => {
   flex-shrink: 0;
 }
 .chevron-open { transform: rotate(180deg); }
-
-/* ── Prediction rows ─────────────────────────────── */
 .pred-list {
   border-top: 1px solid #f3f4f6;
   padding: 6px 8px 8px;
@@ -270,7 +365,6 @@ onMounted(async () => {
   flex-direction: column;
   gap: 4px;
 }
-
 .pred-row {
   display: flex;
   align-items: center;
@@ -279,12 +373,10 @@ onMounted(async () => {
   border-radius: 8px;
   border-left: 3px solid #e5e7eb;
 }
-
-.row-exact   { border-left-color: #16a34a; background: #f0fdf4; }
+.row-exact { border-left-color: #16a34a; background: #f0fdf4; }
 .row-correct { border-left-color: #f59e0b; background: #fffbeb; }
-.row-wrong   { border-left-color: #ef4444; background: #fef2f2; }
+.row-wrong { border-left-color: #ef4444; background: #fef2f2; }
 .row-pending { border-left-color: #d1d5db; background: #f9fafb; }
-
 .team {
   font-size: 12px;
   font-weight: 600;
@@ -294,7 +386,6 @@ onMounted(async () => {
 }
 .t-home { text-align: right; }
 .t-away { text-align: left; }
-
 .score-block {
   display: flex;
   align-items: center;
@@ -314,7 +405,6 @@ onMounted(async () => {
   color: #9ca3af;
   font-weight: 700;
 }
-
 .pts-chip {
   font-size: 11px;
   font-weight: 700;
@@ -324,16 +414,19 @@ onMounted(async () => {
   min-width: 32px;
   text-align: center;
 }
-.chip-exact   { background: #dcfce7; color: #15803d; }
+.chip-exact { background: #dcfce7; color: #15803d; }
 .chip-correct { background: #fef3c7; color: #92400e; }
-.chip-wrong   { background: #fef2f2; color: #9ca3af; }
+.chip-wrong { background: #fef2f2; color: #9ca3af; }
 .chip-pending { background: #f3f4f6; color: #9ca3af; }
-
-/* ── Empty ───────────────────────────────────────── */
 .empty {
   text-align: center;
   padding: 56px 0;
   color: #9ca3af;
   font-size: 14px;
+}
+@media (max-width: 640px) {
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

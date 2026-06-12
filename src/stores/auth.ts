@@ -1,10 +1,13 @@
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 
 export interface Participant {
   id: string
   name: string
   email: string
+  nickname?: string | null
+  favorite_team?: string | null
+  profile_completed?: boolean
   created_at?: string
   updated_at?: string
 }
@@ -12,6 +15,9 @@ export interface Participant {
 export const useAuthStore = defineStore('auth', () => {
   const participant = ref<Participant | null>(null)
   const isAuthenticated = ref(false)
+  const needsProfileCompletion = computed(() => {
+    return Boolean(participant.value && !participant.value.profile_completed)
+  })
 
   // Carrega participante do localStorage ao iniciar
   function loadFromStorage() {
@@ -30,7 +36,11 @@ export const useAuthStore = defineStore('auth', () => {
   function setParticipant(data: Participant) {
     participant.value = data
     isAuthenticated.value = true
-    localStorage.setItem('participant', JSON.stringify(data))
+    localStorage.setItem('participant', JSON.stringify(participant.value))
+  }
+
+  function completeProfile(data: Participant) {
+    setParticipant(data)
   }
 
   function clearAuth() {
@@ -45,7 +55,9 @@ export const useAuthStore = defineStore('auth', () => {
   return {
     participant,
     isAuthenticated,
+    needsProfileCompletion,
     setParticipant,
+    completeProfile,
     clearAuth
   }
 })

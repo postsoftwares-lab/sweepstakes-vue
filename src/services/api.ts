@@ -4,6 +4,7 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'https://smeacdkzzmxpayycqiuo.supabase.co/functions/v1',
   headers: {
     'Content-Type': 'application/json',
+    'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
     'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
   }
 })
@@ -18,6 +19,9 @@ export interface CreateParticipantResponse {
   data: {
     id: string
     name: string
+    nickname: string | null
+    favorite_team: string | null
+    profile_completed: boolean
     email: string
     created_at: string
     updated_at: string
@@ -30,8 +34,34 @@ export interface GetParticipantResponse {
   data: {
     id: string
     name: string
+    nickname: string | null
+    favorite_team: string | null
+    profile_completed: boolean
     email: string
     created_at: string
+    updated_at: string
+  }
+}
+
+export interface CompleteParticipantProfileRequest {
+  participant_id: string
+  name: string
+  nickname: string
+  favorite_team: string
+}
+
+export interface CompleteParticipantProfileResponse {
+  success: boolean
+  message: string
+  data: {
+    id: string
+    name: string
+    nickname: string | null
+    favorite_team: string | null
+    profile_completed: boolean
+    email: string
+    created_at: string
+    updated_at: string
   }
 }
 
@@ -45,6 +75,16 @@ export const authApi = {
     const response = await api.get<GetParticipantResponse>('/participant', {
       params: { email }
     })
+    return response.data
+  },
+
+  async completeParticipantProfile(
+    payload: CompleteParticipantProfileRequest
+  ): Promise<CompleteParticipantProfileResponse> {
+    const response = await api.post<CompleteParticipantProfileResponse>(
+      '/complete-participant-profile',
+      payload
+    )
     return response.data
   }
 }
