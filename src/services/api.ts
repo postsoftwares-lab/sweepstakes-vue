@@ -4,9 +4,23 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'https://smeacdkzzmxpayycqiuo.supabase.co/functions/v1',
   headers: {
     'Content-Type': 'application/json',
-    'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
-    'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`
+    'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY
   }
+})
+
+api.interceptors.request.use((config) => {
+  const participant = localStorage.getItem('participant')
+  if (participant) {
+    try {
+      const data = JSON.parse(participant)
+      if (data.id) {
+        config.headers['X-Participant-ID'] = data.id
+      }
+    } catch (e) {
+      console.error('Error parsing participant:', e)
+    }
+  }
+  return config
 })
 
 export interface CreateParticipantRequest {
