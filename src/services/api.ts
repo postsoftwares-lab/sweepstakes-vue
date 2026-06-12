@@ -13,8 +13,11 @@ api.interceptors.request.use((config) => {
   if (participant) {
     try {
       const data = JSON.parse(participant)
-      if (data.id) {
-        config.headers['X-Participant-ID'] = data.id
+      if (data.id && config.url && !config.params?.participant_id) {
+        if (!config.params) {
+          config.params = {}
+        }
+        config.params.participant_id = data.id
       }
     } catch (e) {
       console.error('Error parsing participant:', e)
