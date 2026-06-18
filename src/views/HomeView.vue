@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { onMounted, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import AppHeader from '@/components/AppHeader.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useLeaderboardStore } from '@/stores/leaderboard'
 import { useMatchesStore } from '@/stores/matches'
-import AppHeader from '@/components/AppHeader.vue'
+import { computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -20,7 +20,7 @@ onMounted(async () => {
   ])
 })
 
-const prize = computed(() => leaderboardStore.rankings.length * 10)
+const prize = computed(() => leaderboardStore.rankings.length * 10 - 10)
 
 const preview = computed(() => leaderboardStore.rankings.slice(0, 5))
 
