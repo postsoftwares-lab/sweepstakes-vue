@@ -1,6 +1,6 @@
-import { ref, computed } from 'vue'
-import { defineStore } from 'pinia'
 import api from '@/services/api'
+import { defineStore } from 'pinia'
+import { computed, ref } from 'vue'
 
 export interface LeaderboardEntry {
   id: string
@@ -28,12 +28,20 @@ export const useLeaderboardStore = defineStore('leaderboard', () => {
   const loading = ref(false)
   const error = ref<string | null>(null)
 
+  const sortedRankings = computed(() => {
+    return [...rankings.value].sort((a, b) => {
+      if (a.score !== b.score) return b.score - a.score
+      if (a.correct_count !== b.correct_count) return b.correct_count - a.correct_count
+      return b.correct_results - a.correct_results
+    })
+  })
+
   const top3 = computed(() => {
-    return rankings.value.slice(0, 3)
+    return sortedRankings.value.slice(0, 3)
   })
 
   const restOfRankings = computed(() => {
-    return rankings.value.slice(3)
+    return sortedRankings.value.slice(3)
   })
 
   const getUserRank = (userId: string) => {
@@ -62,7 +70,7 @@ export const useLeaderboardStore = defineStore('leaderboard', () => {
     } catch (err: any) {
       console.error('Error fetching leaderboard:', err)
       error.value = err.response?.data?.message || 'Erro ao conectar com o servidor'
-      
+
       // Fallback para dados mockados em caso de erro (para desenvolvimento)
       console.log('Usando dados mockados para desenvolvimento')
       loadMockData()
@@ -219,6 +227,7 @@ export const useLeaderboardStore = defineStore('leaderboard', () => {
 
   return {
     rankings,
+    sortedRankings,
     loading,
     error,
     top3,

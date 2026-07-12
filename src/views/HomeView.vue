@@ -20,9 +20,9 @@ onMounted(async () => {
   ])
 })
 
-const prize = computed(() => leaderboardStore.rankings.length * 10 - 10)
+const prize = computed(() => leaderboardStore.sortedRankings.length * 10 - 10)
 
-const preview = computed(() => leaderboardStore.rankings.slice(0, 5))
+const preview = computed(() => leaderboardStore.sortedRankings.slice(0, 5))
 
 const isMe = (userId: string) => userId === authStore.participant?.id
 
@@ -39,7 +39,7 @@ const movement = (entry: any) => leaderboardStore.getRankMovement(entry)
       <div class="prize-card">
         <div class="prize-label">💰 Total Arrecadado</div>
         <div class="prize-amount">R$ {{ prize.toFixed(2).replace('.', ',') }}</div>
-        <div class="prize-sub">{{ leaderboardStore.rankings.length }} participantes × R$ 10,00</div>
+        <div class="prize-sub">{{ leaderboardStore.sortedRankings.length }} participantes × R$ 10,00</div>
       </div>
 
       <!-- Ranking preview -->

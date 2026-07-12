@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { onMounted, computed } from 'vue'
-import { useAuthStore } from '@/stores/auth'
-import { useLeaderboardStore } from '@/stores/leaderboard'
 import AppHeader from '@/components/AppHeader.vue'
 import PodiumCard from '@/components/PodiumCard.vue'
 import RankingRow from '@/components/RankingRow.vue'
+import { useAuthStore } from '@/stores/auth'
+import { useLeaderboardStore } from '@/stores/leaderboard'
+import { computed, onMounted } from 'vue'
 
 const authStore = useAuthStore()
 const leaderboardStore = useLeaderboardStore()
@@ -78,9 +78,9 @@ const isCurrentUser = (userId: string) => {
             <span class="ranking-count">{{ leaderboardStore.rankings.length }} participantes</span>
           </div>
 
-          <div v-if="leaderboardStore.rankings.length > 0">
+          <div v-if="leaderboardStore.sortedRankings.length > 0">
             <RankingRow
-              v-for="entry in leaderboardStore.rankings"
+              v-for="entry in leaderboardStore.sortedRankings"
               :key="entry.id"
               :entry="entry"
               :is-current-user="isCurrentUser(entry.user_id)"
